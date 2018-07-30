@@ -3,5 +3,5 @@ output "API Gateway URL" {
 }
 
 output "API Key" {
-    value = "${aws_api_gateway_api_key.user.id}"
+    value = "${aws_api_gateway_api_key.user.value}"
 }

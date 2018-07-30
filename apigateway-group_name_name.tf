@@ -19,14 +19,16 @@ resource "aws_api_gateway_integration" "group_name" {
   type = "AWS"
   uri = "arn:aws:apigateway:${var.region}:dynamodb:action/GetItem"
   request_templates = {
-    "application/json" = "{
-  \"TableName\": \"${var.role}-stns-osgroup\",
-  \"Key\": {
-    \"name\": {
-      \"S\": \"$input.params().path.name\"
+    "application/json" = <<EOF
+{
+  "TableName": "${var.role}-stns-osgroup",
+  "Key": {
+    "name": {
+      "S": "$util.urlDecode($input.params().path.name)"
     }
   }
-}"
+}
+EOF
   }
   passthrough_behavior = "WHEN_NO_TEMPLATES"
   depends_on = ["aws_api_gateway_method.group_name"]
@@ -49,13 +51,15 @@ resource "aws_api_gateway_integration_response" "group_name" {
   http_method = "${aws_api_gateway_method.group_name.http_method}"
   status_code = "${aws_api_gateway_method_response.group_name_200.status_code}"
   response_templates = {
-  "application/json" = "#set($inputRoot = $input.path('$'))
+  "application/json" = <<EOF
+#set($inputRoot = $input.path('$'))
 {
-  \"$inputRoot.Item.name.S\": {
-    \"id\": $inputRoot.Item.id.S,
-    \"users\": [ $inputRoot.Item.users.S ],
-    \"link_groups\": $inputRoot.Item.link_groups.S
+  "$inputRoot.Item.name.S": {
+    "id": $inputRoot.Item.id.S,
+    "users": [ $inputRoot.Item.users.S ],
+    "link_groups": $inputRoot.Item.link_groups.S
   }
-}"
+}
+EOF
   }
 }

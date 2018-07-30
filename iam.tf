@@ -1,6 +1,6 @@
 resource "aws_iam_instance_profile" "instance_role" {
     name = "dynamodb-osuser-role"
-    roles = ["${aws_iam_role.instance_role.name}"]
+    role = "${aws_iam_role.instance_role.name}"
 }
 
 resource "aws_iam_role" "instance_role" {

@@ -3,13 +3,23 @@ resource "aws_api_gateway_rest_api" "user" {
   description = "stns server"
 }
 
+resource "aws_api_gateway_usage_plan" "user" {
+  name = "my_usage_plan"
+  description  = "my description"
+  api_stages {
+    api_id = "${aws_api_gateway_rest_api.user.id}"
+    stage  = "${aws_api_gateway_deployment.user.stage_name}"
+  }
+}
+
 resource "aws_api_gateway_api_key" "user" {
   name = "${aws_api_gateway_rest_api.user.name}"
+}
 
-  stage_key {
-    rest_api_id = "${aws_api_gateway_rest_api.user.id}"
-    stage_name = "${aws_api_gateway_deployment.user.stage_name}"
-  }
+resource "aws_api_gateway_usage_plan_key" "user" {
+  key_id        = "${aws_api_gateway_api_key.user.id}"
+  key_type      = "API_KEY"
+  usage_plan_id = "${aws_api_gateway_usage_plan.user.id}"
 }
 
 resource "aws_api_gateway_deployment" "user" {
